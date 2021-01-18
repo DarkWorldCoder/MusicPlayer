@@ -17,17 +17,28 @@ class Main:
         self.flag = False
         self.slider_value = DoubleVar()
         self.Draw()
-       
-        
-
-
+    
     def musicSearch(self,path):
         os.chdir(path)
         for root, dirs, files in os.walk('.'):
             for filename in files:
                 if os.path.splitext(filename)[1] == ".mp3":
                     self.mylist.insert(END,os.path.join(root, filename))
-    
+    def new(self):
+        self.value = 0
+        a = self.mylist.curselection()
+        b = a[0]+1
+
+        song = self.mylist.get(b)
+        mixer.music.load(song)
+        
+        self.labelPlaying.config(text=f'{self.mylist.get(ACTIVE)}') 
+        self.play()
+        self.mylist.selection_clear(0,END)
+        self.mylist.activate(b)
+        self.mylist.selection_set(b)
+    def prev(self):
+        pass
     def load(self,hi):
         
         # mixer.music.stop()
@@ -35,19 +46,11 @@ class Main:
         mixer.music.load(self.mylist.get(ACTIVE))
         self.labelPlaying.config(text=f'{self.mylist.get(ACTIVE)}') 
         self.play()
+    
     def play(self):
-        
-        
-
-
-        
         img1 = Image.open(os.path.join("Assests","Pause.png"))
         img1 = img1.resize((50,50), Image.ANTIALIAS)
         photoImg5 =  ImageTk.PhotoImage(img1)
-        
-        
-        
-        
         
         if self.value == 0 :  # music not started
             
@@ -58,11 +61,6 @@ class Main:
             return
             
             
-            
-            
-            
-            
-        
         if self.value == 1: 
             
             self.Play.config(image=self.photoImg)
@@ -110,8 +108,9 @@ class Main:
         scrollbar = Scrollbar(MusicList)
         scrollbar.pack( side = RIGHT, fill = Y )
         Playing = Frame(tk,height=40,width=500)
-        self.labelPlaying = Label(Playing,text="Double Click that music",font=("Courier",20,"bold"),bg="white")
+        self.labelPlaying = Label(Playing,text="Double Click that music",font=("Courier",20,"bold"))
         self.labelPlaying.pack()
+       
         Playing.pack()
 
         self.mylist = Listbox(MusicList, yscrollcommand = scrollbar.set,height=300,width=500,font=("Courier",15,"bold"),activestyle='none',bg="black",fg="white" )
@@ -131,9 +130,9 @@ class Main:
         
         self.Play = Button(ButtonWork,image=self.photoImg,command=self.play)
         self.Play.grid(row = 0,column = 1,padx=10)
-        Next = Button(ButtonWork,image=photoImg1)
+        Next = Button(ButtonWork,image=photoImg1,command = self.new)
         Next.grid(row = 0,column = 2,padx=10)
-        prev = Button(ButtonWork,image=photoImg2)
+        prev = Button(ButtonWork,image=photoImg2,command = self.prev)
         prev.grid(row = 0,column = 0,padx=10,)
         Open = Button(ButtonWork,text="Open Folder",bg="#08a0cf",command=self.openFolder)
         Open.grid(row=0,column=3,ipady=15)
@@ -149,11 +148,9 @@ class Main:
         
         
         
-        
+if __name__ == "__main__":
 
-
-
-Main()
+    Main()
 
 
 
