@@ -32,7 +32,8 @@ class Main:
         
         # mixer.music.stop()
         self.value = 0
-        mixer.music.load(self.mylist.get(ACTIVE)) 
+        mixer.music.load(self.mylist.get(ACTIVE))
+        self.labelPlaying.config(text=f'{self.mylist.get(ACTIVE)}') 
         self.play()
     def play(self):
         
@@ -108,7 +109,10 @@ class Main:
         MusicList.pack_propagate(False)
         scrollbar = Scrollbar(MusicList)
         scrollbar.pack( side = RIGHT, fill = Y )
-        
+        Playing = Frame(tk,height=40,width=500)
+        self.labelPlaying = Label(Playing,text="Double Click that music",font=("Courier",20,"bold"),bg="white")
+        self.labelPlaying.pack()
+        Playing.pack()
 
         self.mylist = Listbox(MusicList, yscrollcommand = scrollbar.set,height=300,width=500,font=("Courier",15,"bold"),activestyle='none',bg="black",fg="white" )
         
@@ -118,8 +122,8 @@ class Main:
         self.mylist.bind("<Button-1>",self.load)
         # print(self.mylist)
         scrollbar.config( command = self.mylist.yview )
-    
-        self.scale = Scale(tk,orient=HORIZONTAL,length=300,sliderlength=10,relief=GROOVE)
+
+        self.scale = Scale(tk,orient=HORIZONTAL,length=300,sliderlength=10)
         
         self.scale.pack()
         #Button Embadding
