@@ -15,6 +15,7 @@ class Main:
         self.FileLength = 0
         self.value = 0
         self.flag = False
+        self.volumeVlaue = 100
         self.slider_value = DoubleVar()
         self.Draw()
     
@@ -38,12 +39,25 @@ class Main:
         self.mylist.activate(b)
         self.mylist.selection_set(b)
     def prev(self):
-        pass
+        self.value = 0
+        a = self.mylist.curselection()
+        if a[0] >0 :
+            b = a[0]-1
+
+            song = self.mylist.get(b)
+            mixer.music.load(song)
+        
+            self.labelPlaying.config(text=f'{self.mylist.get(ACTIVE)}') 
+            self.play()
+            self.mylist.selection_clear(0,END)
+            self.mylist.activate(b)
+            self.mylist.selection_set(b)
     def load(self,hi):
         
         # mixer.music.stop()
         self.value = 0
         mixer.music.load(self.mylist.get(ACTIVE))
+        mixer.music.set_volume(self.volumeVlaue/100)
         self.labelPlaying.config(text=f'{self.mylist.get(ACTIVE)}') 
         self.play()
     
@@ -81,7 +95,9 @@ class Main:
             
             
 
-            
+    def setVolume(self,a):
+        self.volumeVlaue = self.volume.get()
+        mixer.music.set_volume(self.volumeVlaue/100)      
     def Draw(self):
         #Play
         
@@ -129,13 +145,16 @@ class Main:
         ButtonWork = Frame(tk)
         
         self.Play = Button(ButtonWork,image=self.photoImg,command=self.play)
-        self.Play.grid(row = 0,column = 1,padx=10)
+        self.Play.grid(row = 0,column = 1)
         Next = Button(ButtonWork,image=photoImg1,command = self.new)
-        Next.grid(row = 0,column = 2,padx=10)
+        Next.grid(row = 0,column = 2)
         prev = Button(ButtonWork,image=photoImg2,command = self.prev)
-        prev.grid(row = 0,column = 0,padx=10,)
+        prev.grid(row = 0,column = 0)
+        self.volume = Scale(ButtonWork,length=54,sliderlength = 10,bg="#15e8e1",command=self.setVolume)
+        self.volume.set(self.volumeVlaue)
+        self.volume.grid(row=0 ,column=3)
         Open = Button(ButtonWork,text="Open Folder",bg="#08a0cf",command=self.openFolder)
-        Open.grid(row=0,column=3,ipady=15)
+        Open.grid(row=0,column=4,ipady=15)
         ButtonWork.pack(pady=10)
         tk.mainloop()
     def openFolder(self):
