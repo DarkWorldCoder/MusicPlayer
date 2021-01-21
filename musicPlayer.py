@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 import os
 from tkinter import messagebox,filedialog
 from pygame import mixer
@@ -16,28 +17,36 @@ class Main:
         self.value = 0
         self.flag = False
         self.volumeVlaue = 100
-        self.slider_value = DoubleVar()
+        self.songLength = 0
+        
         self.Draw()
     
     def musicSearch(self,path):
         os.chdir(path)
         for root, dirs, files in os.walk('.'):
             for filename in files:
-                if os.path.splitext(filename)[1] == ".mp3":
+                if os.path.splitext(filename)[1] == ".mp3" or os.path.splitext(filename)[1] == ".wav" or os.path.splitext(filename)[1] == ".mp4a":
                     self.mylist.insert(END,os.path.join(root, filename))
     def new(self):
-        self.value = 0
-        a = self.mylist.curselection()
-        b = a[0]+1
+        try:
+            self.value = 0
+            a = self.mylist.curselection()
+            b = a[0]+1
 
-        song = self.mylist.get(b)
-        mixer.music.load(song)
-        
-        self.labelPlaying.config(text=f'{self.mylist.get(ACTIVE)}') 
-        self.play()
-        self.mylist.selection_clear(0,END)
-        self.mylist.activate(b)
-        self.mylist.selection_set(b)
+
+            song = self.mylist.get(b)
+            mixer.music.load(song)
+            self.songLength=MP3(song).info.length
+            self.scale.config(to=self.songLength)
+            
+            
+            self.labelPlaying.config(text=f'{self.mylist.get(ACTIVE)}') 
+            self.play()
+            self.mylist.selection_clear(0,END)
+            self.mylist.activate(b)
+            self.mylist.selection_set(b)
+        except Exception:
+            pass
     def prev(self):
         self.value = 0
         a = self.mylist.curselection()
@@ -46,6 +55,8 @@ class Main:
 
             song = self.mylist.get(b)
             mixer.music.load(song)
+            self.songLength=MP3(song).info.length
+            self.scale.config(to=self.songLength)
         
             self.labelPlaying.config(text=f'{self.mylist.get(ACTIVE)}') 
             self.play()
@@ -56,11 +67,15 @@ class Main:
         
         # mixer.music.stop()
         self.value = 0
-        mixer.music.load(self.mylist.get(ACTIVE))
+        a=self.mylist.get(ACTIVE)
+        mixer.music.load(a)
         mixer.music.set_volume(self.volumeVlaue/100)
-        self.labelPlaying.config(text=f'{self.mylist.get(ACTIVE)}') 
+        self.labelPlaying.config(text=f'{a}') 
+        self.songLength=MP3(a).info.length
+        self.scale.config(to=self.songLength)
+        
         self.play()
-    
+        self.update()
     def play(self):
         img1 = Image.open(os.path.join("Assests","Pause.png"))
         img1 = img1.resize((50,50), Image.ANTIALIAS)
@@ -82,7 +97,7 @@ class Main:
              # music playing
             mixer.music.pause()
             self.value = 2
-            print(mixer.music.get_pos())
+            
             
             
             
@@ -94,7 +109,16 @@ class Main:
             self.value = 1
             
             
+    def update(self):#For updating thevalue everysecond
+        if mixer.music.get_busy():
+            self.scale.set(mixer.music.get_pos()//1000)
+            
 
+        self.scale.after(1000,self.fine)
+    def fine(self):#help to run update everysecond
+        if mixer.music.get_busy():
+            self.scale.set(mixer.music.get_pos()//1000)
+        self.scale.after(1000,self.update)
     def setVolume(self,a):
         self.volumeVlaue = self.volume.get()
         mixer.music.set_volume(self.volumeVlaue/100)      
@@ -138,7 +162,7 @@ class Main:
         # print(self.mylist)
         scrollbar.config( command = self.mylist.yview )
 
-        self.scale = Scale(tk,orient=HORIZONTAL,length=300,sliderlength=10)
+        self.scale = ttk.Scale(tk,orient=HORIZONTAL,length=300,from_=0,to=100)
         
         self.scale.pack()
         #Button Embadding
@@ -156,7 +180,12 @@ class Main:
         Open = Button(ButtonWork,text="Open Folder",bg="#08a0cf",command=self.openFolder)
         Open.grid(row=0,column=4,ipady=15)
         ButtonWork.pack(pady=10)
+        self.scale.after(1000,self.update)
+        tk.after(100)
         tk.mainloop()
+    
+    def scaleSet(self):
+        pass
     def openFolder(self):
         a = (filedialog.askdirectory())
         
