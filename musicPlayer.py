@@ -32,6 +32,10 @@ class Main:
                     self.mylist.insert(END,os.path.join(root, filename))
     def new(self):
         try:
+            self.scalePos = 0
+            self.musicPos = 0
+            self.newFlag = True
+            self.innerFlag = True
             self.value = 0
             a = self.mylist.curselection()
             b = a[0]+1
@@ -52,6 +56,10 @@ class Main:
             pass
     def prev(self):
         self.value = 0
+        self.scalePos = 0
+        self.musicPos = 0
+        self.newFlag = True
+        self.innerFlag = True
         a = self.mylist.curselection()
         if a[0] >0 :
             b = a[0]-1
@@ -70,6 +78,11 @@ class Main:
         
         # mixer.music.stop()
         self.value = 0
+        
+        self.scalePos = 0
+        self.musicPos = 0
+        self.newFlag = True
+        self.innerFlag = True
         a=self.mylist.get(ACTIVE)
         mixer.music.load(a)
         mixer.music.set_volume(self.volumeVlaue/100)
@@ -80,6 +93,10 @@ class Main:
         self.play()
         
     def play(self):
+        self.scalePos = 0
+        self.musicPos = 0
+        self.newFlag = True
+        self.innerFlag = True
         img1 = Image.open(os.path.join("Assests","Pause.png"))
         img1 = img1.resize((50,50), Image.ANTIALIAS)
         photoImg5 =  ImageTk.PhotoImage(img1)
@@ -124,12 +141,11 @@ class Main:
                  
                     self.scale.set(mixer.music.get_pos()//1000)
                 else:
-                    self.musicPos += 1
-                    # print(self.musicPos)
-                    print(self.musicPos,self.scalePos)
+                    self.musicPos += 0.5
+                    
                     self.scale.set(int(self.musicPos))
                
-            # print(self.scale.get())
+            
             else:
                 
                 self.scale.set(self.scalePos)
@@ -150,10 +166,8 @@ class Main:
         
         self.newFlag = False
         self.innerFlag = False
-        # self.scale.set(self.scalePos)
+        
 
-        
-        
     def Draw(self):
         #Play
         
