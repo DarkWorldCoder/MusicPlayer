@@ -5,7 +5,7 @@ from tkinter import messagebox,filedialog
 from pygame import mixer
 from PIL import Image,ImageTk
 tk = Tk()
-tk.geometry(("900x500"))
+tk.geometry(("600x500"))
 tk.title("Music Player")
 from mutagen.mp3 import MP3
 tk.iconphoto(False,ImageTk.PhotoImage(file = os.path.join("Assests","Iocn.png")))
@@ -18,7 +18,10 @@ class Main:
         self.flag = False
         self.volumeVlaue = 100
         self.songLength = 0
-        
+        self.scalePos = 0
+        self.musicPos = 0
+        self.newFlag = True
+        self.innerFlag = True
         self.Draw()
     
     def musicSearch(self,path):
@@ -75,7 +78,7 @@ class Main:
         self.scale.config(to=self.songLength)
         
         self.play()
-        self.update()
+        
     def play(self):
         img1 = Image.open(os.path.join("Assests","Pause.png"))
         img1 = img1.resize((50,50), Image.ANTIALIAS)
@@ -111,17 +114,46 @@ class Main:
             
     def update(self):#For updating thevalue everysecond
         if mixer.music.get_busy():
-            self.scale.set(mixer.music.get_pos()//1000)
+             
+            # self.a = mixer.music.get_pos()//1000
+            # print(self.a,b)
             
+            if self.newFlag:
+                if self.innerFlag:
+                       
+                 
+                    self.scale.set(mixer.music.get_pos()//1000)
+                else:
+                    self.musicPos += 1
+                    # print(self.musicPos)
+                    print(self.musicPos,self.scalePos)
+                    self.scale.set(int(self.musicPos))
+               
+            # print(self.scale.get())
+            else:
+                
+                self.scale.set(self.scalePos)
+                
+                self.newFlag = True
 
-        self.scale.after(1000,self.fine)
-    def fine(self):#help to run update everysecond
-        if mixer.music.get_busy():
-            self.scale.set(mixer.music.get_pos()//1000)
-        self.scale.after(1000,self.update)
+        self.scale.after(500,self.update)
+    
     def setVolume(self,a):
         self.volumeVlaue = self.volume.get()
         mixer.music.set_volume(self.volumeVlaue/100)      
+    def release(self,a):
+        self.scalePos = self.scale.get()
+        
+        self.musicPos = self.scalePos
+        mixer.music.set_pos(int(self.scalePos))
+       
+        
+        self.newFlag = False
+        self.innerFlag = False
+        # self.scale.set(self.scalePos)
+
+        
+        
     def Draw(self):
         #Play
         
@@ -162,8 +194,8 @@ class Main:
         # print(self.mylist)
         scrollbar.config( command = self.mylist.yview )
 
-        self.scale = ttk.Scale(tk,orient=HORIZONTAL,length=300,from_=0,to=100)
-        
+        self.scale = ttk.Scale(tk,orient=HORIZONTAL,length=300,from_=0,to=100,)
+        self.scale.bind("<ButtonRelease-1>",self.release)
         self.scale.pack()
         #Button Embadding
         ButtonWork = Frame(tk)
