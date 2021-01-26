@@ -23,7 +23,12 @@ class Main:
         self.newFlag = True
         self.innerFlag = True
         self.Draw()
-    
+    def reset(self):
+        self.scalePos = 0
+        self.musicPos = 0
+        self.newFlag = True
+        self.innerFlag = True
+        self.value = 0
     def musicSearch(self,path):
         os.chdir(path)
         for root, dirs, files in os.walk('.'):
@@ -32,11 +37,7 @@ class Main:
                     self.mylist.insert(END,os.path.join(root, filename))
     def new(self):
         try:
-            self.scalePos = 0
-            self.musicPos = 0
-            self.newFlag = True
-            self.innerFlag = True
-            self.value = 0
+            self.reset()
             a = self.mylist.curselection()
             b = a[0]+1
 
@@ -55,11 +56,7 @@ class Main:
         except Exception:
             pass
     def prev(self):
-        self.value = 0
-        self.scalePos = 0
-        self.musicPos = 0
-        self.newFlag = True
-        self.innerFlag = True
+        self.reset()
         a = self.mylist.curselection()
         if a[0] >0 :
             b = a[0]-1
@@ -77,12 +74,7 @@ class Main:
     def load(self,hi):
         
         # mixer.music.stop()
-        self.value = 0
-        
-        self.scalePos = 0
-        self.musicPos = 0
-        self.newFlag = True
-        self.innerFlag = True
+        self.reset()
         a=self.mylist.get(ACTIVE)
         mixer.music.load(a)
         mixer.music.set_volume(self.volumeVlaue/100)
@@ -93,10 +85,7 @@ class Main:
         self.play()
         
     def play(self):
-        self.scalePos = 0
-        self.musicPos = 0
-        self.newFlag = True
-        self.innerFlag = True
+        self.reset()
         img1 = Image.open(os.path.join("Assests","Pause.png"))
         img1 = img1.resize((50,50), Image.ANTIALIAS)
         photoImg5 =  ImageTk.PhotoImage(img1)
@@ -207,10 +196,15 @@ class Main:
         self.mylist.bind("<Button-1>",self.load)
         # print(self.mylist)
         scrollbar.config( command = self.mylist.yview )
-
-        self.scale = ttk.Scale(tk,orient=HORIZONTAL,length=300,from_=0,to=100,)
+        playBar = Frame(tk)
+        self.start = Label(playBar,text="00:00")
+        self.finish = Label(playBar,text="00:00")
+        self.start.grid(row=0,column=0)
+        self.finish.grid(row=0,column=2)
+        self.scale = ttk.Scale(playBar,orient=HORIZONTAL,length=300,from_=0,to=100,)
         self.scale.bind("<ButtonRelease-1>",self.release)
-        self.scale.pack()
+        self.scale.grid(row=0,column=1)
+        playBar.pack()
         #Button Embadding
         ButtonWork = Frame(tk)
         
