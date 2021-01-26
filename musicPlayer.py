@@ -4,6 +4,7 @@ import os
 from tkinter import messagebox,filedialog
 from pygame import mixer
 from PIL import Image,ImageTk
+from time import gmtime,strftime
 tk = Tk()
 tk.geometry(("600x500"))
 tk.title("Music Player")
@@ -81,7 +82,8 @@ class Main:
         self.labelPlaying.config(text=f'{a}') 
         self.songLength=MP3(a).info.length
         self.scale.config(to=self.songLength)
-        
+        time = strftime("%M:%S", gmtime(self.songLength))
+        self.finish.config(text=time)
         self.play()
         
     def play(self):
@@ -129,9 +131,12 @@ class Main:
                        
                  
                     self.scale.set(mixer.music.get_pos()//1000)
+                    time = strftime("%M:%S", gmtime(mixer.music.get_pos()//1000))
+                    self.start.config(text=time)
                 else:
                     self.musicPos += 0.5
-                    
+                    time = strftime("%M:%S", gmtime(self.musicPos))
+                    self.start.config(text=time)
                     self.scale.set(int(self.musicPos))
                
             
